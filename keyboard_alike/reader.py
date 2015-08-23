@@ -53,19 +53,23 @@ class Reader(object):
             raise DeviceException('Could not set configuration: %s' % str(e))
 
         self._endpoint = self._device[0][(0, 0)][0]
+        self.keep_reading = True
 
     def read(self):
         data = []
         data_read = False
 
-        while True:
+        while self.keep_reading:
             try:
                 data += self._endpoint.read(self._endpoint.wMaxPacketSize)
                 data_read = True
             except usb.core.USBError as e:
                 if e.args[0] == 110 and data_read:
                     if len(data) < self.data_size:
-                        raise ReadException('Got %s bytes instead of %s - %s' % (len(data), self.data_size, str(data)))
+                        if self.debug:
+                            print('Got %s bytes instead of %s - %s' % (len(data), self.data_size, str(data)))
+                            print('Raw data', data)
+                        continue
                     else:
                         break
 
@@ -73,6 +77,9 @@ class Reader(object):
             print('Raw data', data)
         return self.decode_raw_data(data)
 
+    def __del__(self):
+        self.disconnect()
+    
     def decode_raw_data(self, raw_data):
         data = self.extract_meaningful_data_from_chunk(raw_data)
         return self.raw_data_to_keys(data)
@@ -91,6 +98,7 @@ class Reader(object):
         return ''.join(map(mapping.raw_to_key, extracted_data))
 
     def disconnect(self):
+        self.keep_reading = False
         if self.should_reset:
             self._device.reset()
         usb.util.release_interface(self._device, self.interface)
