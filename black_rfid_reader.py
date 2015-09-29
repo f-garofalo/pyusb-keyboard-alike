@@ -1,6 +1,6 @@
 from keyboard_alike import reader
 import sys
-import httplib, urllib
+import http.client, urllib
 
 # *****Config******
 # Ouput of `dmesg | tail` after plugging the device
@@ -32,9 +32,9 @@ if __name__ == "__main__":
             print('RFID: %s' % data)
 
             print('HTTP Request...')
-            params = urllib.urlencode({'spam': 1, 'eggs': 2, 'bacon': 0, 'data': data})
+            params = urllib.parse.urlencode({'spam': 1, 'eggs': 2, 'bacon': 0, 'data': data})
             headers = {"Content-type": "application/x-www-form-urlencoded","Accept": "text/plain"}
-            conn = httplib.HTTPConnection("www.mysite.com:80")
+            conn = http.client.HTTPConnection("www.mysite.com:80")
             conn.request("POST", "/query", params, headers)
             response = conn.getresponse()
             print(response.status, response.reason)

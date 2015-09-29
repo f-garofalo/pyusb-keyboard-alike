@@ -28,6 +28,10 @@ def map_character(c):
 
 
 def chunk_data(data, chunks):
+    try:
+        xrange
+    except NameError:
+        xrange = range
     for i in xrange(0, len(data), chunks):
         yield data[i:i + chunks]
 
