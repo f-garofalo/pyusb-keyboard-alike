@@ -8,7 +8,7 @@
 # Description:       <DESCRIPTION>
 ### END INIT INFO
 
-SCRIPT=/home/pi/git/rfid/rfid.bash
+SCRIPT=/home/pi/git/rfid/rfid_launcher.bash
 RUNAS=root
 
 PIDFILE=/var/run/rfid.pid
